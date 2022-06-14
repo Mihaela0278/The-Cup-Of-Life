@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using TheCupOfLife.Data;
 using TheCupOfLife.Data.Models;
 
@@ -33,7 +34,7 @@ namespace TheCupOfLife.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -61,6 +62,8 @@ namespace TheCupOfLife.Web
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            TagSeed.Seed(serviceProvider.GetRequiredService<TheCupOfLifeContext>());
         }
     }
 }
