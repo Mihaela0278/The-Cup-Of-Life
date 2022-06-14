@@ -13,6 +13,9 @@ namespace TheCupOfLife.Data
     public class TheCupOfLifeContext : IdentityDbContext<User>
     {
         public DbSet<Post> Posts { get; set; }
+
+        public DbSet<Tag> Tags { get; set; }
+
         public override DbSet<User> Users { get; set; }
 
         public TheCupOfLifeContext(DbContextOptions<TheCupOfLifeContext> options) : base(options)
