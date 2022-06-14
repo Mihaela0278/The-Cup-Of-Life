@@ -19,7 +19,6 @@ namespace TheCupOfLife.Data.Models
         public string Content { get; set; }
 
         // One to many relation 
-        [Required]
         public string UserId { get; set; }
         public User User { get; set; }
         
