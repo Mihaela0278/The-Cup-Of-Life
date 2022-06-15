@@ -16,6 +16,7 @@ namespace TheCupOfLife.Data.Models
         [Required]
         public string ImageUrl { get; set; }
         [Required]
+        [MinLength(50)]
         public string Content { get; set; }
 
         // One to many relation 
