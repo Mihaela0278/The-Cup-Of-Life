@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using TheCupOfLife.Data.Models;
 
 namespace TheCupOfLife.Web.Controllers
 {
+    
     public class PostsController : Controller
     {
         private readonly TheCupOfLifeContext _context;
@@ -25,19 +27,19 @@ namespace TheCupOfLife.Web.Controllers
 
         }
 
-        // GET: Posts
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var theCupOfLifeContext = _context.Posts.Include(p => p.Tag).Include(p => p.User);
             return View(await theCupOfLifeContext.ToListAsync());
         }
 
-        // GET: Posts/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             var post = await _context.Posts
@@ -46,7 +48,7 @@ namespace TheCupOfLife.Web.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (post == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             return View(post);
@@ -84,13 +86,13 @@ namespace TheCupOfLife.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             var post = await _context.Posts.FindAsync(id);
-            if (post == null)
+            if (post == null || post.UserId != _userManager.GetUserId(User))
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", post.TagId);
 
@@ -106,7 +108,7 @@ namespace TheCupOfLife.Web.Controllers
         {
             if (id != post.Id)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             if (ModelState.IsValid)
@@ -121,7 +123,7 @@ namespace TheCupOfLife.Web.Controllers
                 {
                     if (!PostExists(post.Id))
                     {
-                        return NotFound();
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -140,16 +142,16 @@ namespace TheCupOfLife.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             var post = await _context.Posts
                 .Include(p => p.Tag)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null)
+            if (post == null || post.UserId != _userManager.GetUserId(User))
             {
-                return NotFound();
+                return RedirectToAction(nameof(Index));
             }
 
             return View(post);

@@ -1,4 +1,8 @@
-﻿@model IEnumerable<TheCupOfLife.Data.Models.Post>
+﻿@using Microsoft.AspNetCore.Identity
+@using TheCupOfLife.Data.Models
+@inject UserManager<User> UserManager
+
+@model IEnumerable<TheCupOfLife.Data.Models.Post>
 
 @{
     ViewData["Title"] = "All posts";
@@ -13,7 +17,7 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-               
+
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Content)
@@ -28,29 +32,34 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                <img src="@Url.Content(item.ImageUrl)" />
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tag.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    <img src="@Url.Content(item.ImageUrl)" style="width: 400px; height: 400px;" />
+                </td>
+                <td>
+                    @item.Content.Substring(0, 5)...
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tag.Name)
+                </td>
+                <td>
+                    @if (UserManager.GetUserId(User) == item.UserId || User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
