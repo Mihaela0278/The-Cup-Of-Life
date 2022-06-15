@@ -29,6 +29,7 @@ namespace TheCupOfLife.Web
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<User>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<TheCupOfLifeContext>();
             services.AddControllersWithViews();
         }
@@ -64,6 +65,8 @@ namespace TheCupOfLife.Web
             });
 
             TagSeed.Seed(serviceProvider.GetRequiredService<TheCupOfLifeContext>());
+            RoleSeed.SeedDefaultAdmin(serviceProvider.GetRequiredService<UserManager<User>>()).GetAwaiter().GetResult();
+            RoleSeed.SeedRoles(serviceProvider.GetRequiredService<TheCupOfLifeContext>());
         }
     }
 }

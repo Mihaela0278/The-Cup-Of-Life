@@ -54,7 +54,7 @@ namespace TheCupOfLife.Web.Controllers
             return View(post);
         }
 
-        // GET: Posts/Create
+        [HttpGet]
         public IActionResult Create()
         {
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name");
@@ -62,7 +62,6 @@ namespace TheCupOfLife.Web.Controllers
             return View();
         }
 
-        // POST: Posts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,ImageUrl,Content,TagId")] Post post)
@@ -81,7 +80,7 @@ namespace TheCupOfLife.Web.Controllers
             return View(post);
         }
 
-        // GET: Posts/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -90,7 +89,7 @@ namespace TheCupOfLife.Web.Controllers
             }
 
             var post = await _context.Posts.FindAsync(id);
-            if (post == null || post.UserId != _userManager.GetUserId(User))
+            if (post == null || !User.IsInRole(Roles.ADMIN.ToString()))
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -99,9 +98,6 @@ namespace TheCupOfLife.Web.Controllers
             return View(post);
         }
 
-        // POST: Posts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,ImageUrl,Content,TagId")] Post post)
@@ -137,7 +133,7 @@ namespace TheCupOfLife.Web.Controllers
             return View(post);
         }
 
-        // GET: Posts/Delete/5
+        [HttpGet]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -149,7 +145,7 @@ namespace TheCupOfLife.Web.Controllers
                 .Include(p => p.Tag)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (post == null || post.UserId != _userManager.GetUserId(User))
+            if (post == null || !User.IsInRole(Roles.ADMIN.ToString()))
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -157,7 +153,6 @@ namespace TheCupOfLife.Web.Controllers
             return View(post);
         }
 
-        // POST: Posts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

@@ -51,7 +51,7 @@
                     @Html.DisplayFor(modelItem => item.Tag.Name)
                 </td>
                 <td>
-                    @if (UserManager.GetUserId(User) == item.UserId || User.IsInRole("Admin"))
+                    @if (UserManager.GetUserId(User) == item.UserId || User.IsInRole(Roles.ADMIN.ToString()))
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
