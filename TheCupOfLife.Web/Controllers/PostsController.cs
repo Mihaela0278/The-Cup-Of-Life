@@ -12,7 +12,7 @@ using TheCupOfLife.Data.Models;
 
 namespace TheCupOfLife.Web.Controllers
 {
-    
+    [Authorize]
     public class PostsController : Controller
     {
         private readonly TheCupOfLifeContext _context;
@@ -28,24 +28,24 @@ namespace TheCupOfLife.Web.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             var theCupOfLifeContext = _context.Posts.Include(p => p.Tag).Include(p => p.User);
-            return View(await theCupOfLifeContext.ToListAsync());
+            return View(theCupOfLifeContext.ToList());
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Details(Guid? id)
+        public IActionResult Details(Guid? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var post = await _context.Posts
+            var post = _context.Posts
                 .Include(p => p.Tag)
                 .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefault(m => m.Id == id);
             if (post == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -64,14 +64,14 @@ namespace TheCupOfLife.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ImageUrl,Content,TagId")] Post post)
+        public IActionResult Create([Bind("Id,Title,ImageUrl,Content,TagId")] Post post)
         {
             if (ModelState.IsValid)
             {
                 post.Id = Guid.NewGuid();
                 post.UserId = _userManager.GetUserId(User);
                 _context.Posts.Add(post);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 
                 return RedirectToAction(nameof(Index));
             }
@@ -81,14 +81,14 @@ namespace TheCupOfLife.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var post = await _context.Posts.FindAsync(id);
+            var post = _context.Posts.Find(id);
 
             if (!(post == null || User.IsInRole(Roles.ADMIN.ToString()) || post.UserId == _userManager.GetUserId(User)))
             {
@@ -101,7 +101,7 @@ namespace TheCupOfLife.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,ImageUrl,Content,TagId")] Post post)
+        public IActionResult Edit(Guid id, [Bind("Id,Title,ImageUrl,Content,TagId")] Post post)
         {
             if (id != post.Id)
             {
@@ -114,7 +114,7 @@ namespace TheCupOfLife.Web.Controllers
                 {
                     post.UserId = _userManager.GetUserId(User);
                     _context.Update(post);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -135,17 +135,17 @@ namespace TheCupOfLife.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(Guid? id)
+        public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            var post = await _context.Posts
+            var post = _context.Posts
                 .Include(p => p.Tag)
                 .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefault(m => m.Id == id);
             if (post == null || !User.IsInRole(Roles.ADMIN.ToString()))
             {
                 return RedirectToAction(nameof(Index));
@@ -156,11 +156,11 @@ namespace TheCupOfLife.Web.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
-            var post = await _context.Posts.FindAsync(id);
+            var post = _context.Posts.Find(id);
             _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 
