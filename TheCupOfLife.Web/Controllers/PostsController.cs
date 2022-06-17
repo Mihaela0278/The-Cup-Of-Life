@@ -89,7 +89,8 @@ namespace TheCupOfLife.Web.Controllers
             }
 
             var post = await _context.Posts.FindAsync(id);
-            if (post == null || !User.IsInRole(Roles.ADMIN.ToString()))
+
+            if (!(post == null || User.IsInRole(Roles.ADMIN.ToString()) || post.UserId == _userManager.GetUserId(User)))
             {
                 return RedirectToAction(nameof(Index));
             }

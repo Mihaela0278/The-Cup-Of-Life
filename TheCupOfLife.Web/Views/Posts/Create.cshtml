@@ -21,10 +21,11 @@
                 <label asp-for="ImageUrl" class="control-label"></label>
                 <input asp-for="ImageUrl" class="form-control" />
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                <img id="ImagePreview" style="width:200px;height:200px;display: none" />
             </div>
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
-                <input asp-for="Content" class="form-control" />
+                <textarea asp-for="Content" class="form-control"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -43,5 +44,17 @@
 </div>
 
 @section Scripts {
+    <script>
+        let output = document.getElementById('ImagePreview');
+        $(document).ready(function () {
+            output.src = $('#ImageUrl').val();
+        })
+        $('#ImageUrl').on("focus", () => {
+            output.style.display = "block";
+        })
+        $("#ImageUrl").on("change", function () {
+            output.src = $(this).val();
+        })
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
